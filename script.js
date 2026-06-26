@@ -1,5 +1,5 @@
 // ============================================
-// LANTERN & CO. — Interactions & GSAP animation
+// Interactions & GSAP animation
 // ============================================
 
 gsap.registerPlugin(ScrollTrigger);
@@ -29,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- Stat counters ----------
   document.querySelectorAll('.stat-num').forEach((el) => {
-    const target = parseInt(el.dataset.count, 10);
+    const target = parseFloat(el.dataset.count); // Changed to parseFloat to handle decimals like 99.9 or 5.0
+    if (isNaN(target)) return;
+    
     ScrollTrigger.create({
       trigger: el,
       start: 'top 90%',
@@ -39,9 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
           textContent: target,
           duration: 1.4,
           ease: 'power2.out',
-          snap: { textContent: 1 },
+          snap: { textContent: 1 }, // Note: if you want decimals to animate smoothly, you may need to adjust snap
           onUpdate: function () {
-            el.textContent = Math.ceil(el.textContent);
+            // Keep original text if it has a decimal or symbol (like 99.9%), otherwise round
+            if(el.dataset.count.includes('.')){
+               el.textContent = Number(this.targets()[0].textContent).toFixed(1);
+            } else {
+               el.textContent = Math.ceil(this.targets()[0].textContent);
+            }
           }
         });
       }
@@ -117,37 +124,107 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ---------- Mobile nav burger (simple toggle, no full menu markup yet) ----------
+// ---------- Mobile nav burger (Premium Slide-Down & Auto-Close) ----------
   const burger = document.getElementById('navBurger');
-  if (burger) {
+  const navLinks = document.querySelector('.nav-links');
+  
+  if (burger && navLinks) {
     burger.addEventListener('click', () => {
-      const links = document.querySelector('.nav-links');
-      links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
-      if (links.style.display === 'flex') {
-        links.style.position = 'absolute';
-        links.style.top = '64px';
-        links.style.left = '20px';
-        links.style.right = '20px';
-        links.style.flexDirection = 'column';
-        links.style.background = 'rgba(255,255,255,0.9)';
-        links.style.backdropFilter = 'blur(18px)';
-        links.style.padding = '20px';
-        links.style.borderRadius = '18px';
-        links.style.gap = '16px';
-        links.style.boxShadow = '0 8px 32px rgba(28,28,30,0.1)';
+      // Toggle the menu visibility
+      navLinks.classList.toggle('menu-open');
+      
+      // Animate the burger icon into an 'X'
+      burger.classList.toggle('active'); 
+      
+      // Prevent background scrolling when menu is open
+      if (navLinks.classList.contains('menu-open')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
       }
+    });
+
+    // Auto-close menu when a link is tapped
+    const links = navLinks.querySelectorAll('a');
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        // Remove open classes
+        navLinks.classList.remove('menu-open');
+        burger.classList.remove('active');
+        
+        // Restore background scrolling
+        document.body.style.overflow = '';
+      });
     });
   }
 
-  // ---------- Contact form (front-end only — no backend wired yet) ----------
+  // ---------- Contact form (Web3Forms Integration) ----------
   const form = document.getElementById('contactForm');
-  const note = document.getElementById('formNote');
+  const result = document.getElementById('formNote');
 
   if (form) {
-    form.addEventListener('submit', (e) => {
+    const submitButton = form.querySelector('.form-submit');
+
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      note.textContent = 'Thanks — this is a demo form, so nothing was actually sent yet.';
-      gsap.fromTo(note, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+
+      // UI Feedback: Let the user know it's sending
+      const originalBtnText = submitButton.innerText;
+      submitButton.innerText = 'Sending...';
+      submitButton.style.opacity = '0.7';
+      submitButton.style.pointerEvents = 'none';
+
+      const formData = new FormData(form);
+      const object = Object.fromEntries(formData);
+      const json = JSON.stringify(object);
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: json
+      })
+      .then(async (response) => {
+        let json = await response.json();
+        if (response.status == 200) {
+          // Success
+          result.style.display = "block";
+          result.style.color = "#10b981"; // Success green
+          result.innerText = "Message sent successfully! We'll be in touch soon.";
+          gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+          form.reset();
+        } else {
+          // Form endpoint error
+          result.style.display = "block";
+          result.style.color = "#ef4444"; // Error red
+          result.innerText = json.message || "Something went wrong.";
+          gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+        }
+      })
+      .catch(error => {
+        // Network error
+        result.style.display = "block";
+        result.style.color = "#ef4444";
+        result.innerText = "Something went wrong! Please try again later.";
+        gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+      })
+      .finally(() => {
+        // Reset button state
+        submitButton.innerText = originalBtnText;
+        submitButton.style.opacity = '1';
+        submitButton.style.pointerEvents = 'auto';
+
+        // Fade out and hide the message after 5 seconds
+        setTimeout(() => {
+          gsap.to(result, { 
+            opacity: 0, 
+            duration: 0.4, 
+            onComplete: () => { result.style.display = "none"; }
+          });
+        }, 5000);
+      });
     });
   }
 

@@ -1,5 +1,35 @@
+/* Custom Selection (Overrides default blue highlight) */
+::selection {
+  background-color: #111;
+  color: #fff;
+}
+::-moz-selection {
+  background-color: #111;
+  color: #fff;
+}
+
+/* Custom Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* Smooth HTML Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 /* ============================================
-   LANTERN & CO. — Enhanced glassmorphism tokens
+   Enhanced glassmorphism tokens
    ============================================ */
 :root {
   --bg: #FBF8F2;
@@ -16,11 +46,11 @@
   --rose-glow: rgba(214, 120, 110, 0.18);
 
   /* Glass elevation system — 3 distinct depths */
-  --glass-1-bg: rgba(255, 255, 255, 0.38);     /* whisper: section dividers, tags */
+  --glass-1-bg: rgba(255, 255, 255, 0.38);
   --glass-1-blur: 8px;
-  --glass-2-bg: rgba(255, 255, 255, 0.55);     /* standard: nav, cards */
+  --glass-2-bg: rgba(255, 255, 255, 0.55);
   --glass-2-blur: 16px;
-  --glass-3-bg: rgba(255, 255, 255, 0.68);     /* elevated: hero stats, featured, contact */
+  --glass-3-bg: rgba(255, 255, 255, 0.68);
   --glass-3-blur: 28px;
 
   --glass-edge-light: rgba(255, 255, 255, 0.9);
@@ -39,7 +69,6 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
@@ -64,7 +93,6 @@ img { max-width: 100%; display: block; }
 
 /* ============================================
    SITE-WIDE MESH BACKDROP
-   The thing glass panels actually refract — fixed, behind everything
    ============================================ */
 .site-mesh {
   position: fixed;
@@ -130,7 +158,6 @@ img { max-width: 100%; display: block; }
 
 /* ============================================
    GLASS ELEVATION SYSTEM
-   Three depths, each with a light-catching top edge
    ============================================ */
 .glass {
   position: relative;
@@ -166,10 +193,6 @@ img { max-width: 100%; display: block; }
 
 /* ============================================
    3D POINTER TILT
-   Applied to service + team cards only — JS drives the
-   rotateX/rotateY/scale transform on mousemove. The glare
-   layer (::after) tracks the cursor and moves opposite the
-   tilt direction, selling the "light hitting glass" read.
    ============================================ */
 .tilt {
   transform-style: preserve-3d;
@@ -188,12 +211,10 @@ img { max-width: 100%; display: block; }
 }
 .tilt.hovering::after { opacity: 1; }
 
-/* Disable tilt on touch/coarse-pointer devices — finger hover has no meaning */
 @media (hover: none) {
   .tilt { transform: none !important; }
   .tilt::after { display: none; }
 }
-
 
 /* ============================================
    EYEBROW
@@ -243,11 +264,19 @@ img { max-width: 100%; display: block; }
 }
 .nav.glass::before { left: 16%; right: 16%; }
 
-.nav-logo-mark {
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.nav-brand-name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 19px;
-  letter-spacing: -0.01em;
+  font-size: 1.1rem;
+  letter-spacing: -0.2px;
 }
 
 .nav-links { display: flex; gap: 28px; }
@@ -270,8 +299,39 @@ img { max-width: 100%; display: block; }
 }
 .nav-cta:hover { background: var(--amber-deep); transform: translateY(-1px); }
 
-.nav-burger { display: none; flex-direction: column; gap: 4px; padding: 8px; }
-.nav-burger span { width: 20px; height: 2px; background: var(--ink); border-radius: 2px; }
+.nav-burger { 
+  display: none; 
+  flex-direction: column; 
+  gap: 4px; 
+  padding: 8px; 
+  position: relative; 
+  z-index: 101; /* Keeps burger above the mobile menu overlay */
+}
+
+.nav-burger span { 
+  width: 20px; 
+  height: 2px; 
+  background: var(--ink); 
+  border-radius: 2px; 
+  transition: transform 0.3s ease, opacity 0.3s ease; 
+}
+
+/* The 'X' Animation */
+.nav-burger.active span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.nav-burger.active span:nth-child(2) {
+  opacity: 0;
+}
+.nav-burger.active span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Keeps logo above the mobile menu overlay */
+.nav-logo {
+  position: relative;
+  z-index: 101; 
+}
 
 /* ============================================
    HERO
@@ -285,7 +345,7 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
 }
 
-.hero-bg { display: none; } /* superseded by site-mesh */
+.hero-bg { display: none; }
 
 .hero-inner {
   position: relative;
@@ -352,7 +412,7 @@ img { max-width: 100%; display: block; }
 }
 .btn-outline:hover { background: var(--ink); color: var(--bg); }
 
-/* Hero stats — elevated glass, the deepest panel in the hero */
+/* Hero stats */
 .hero-stats.glass {
   background: var(--glass-3-bg);
   backdrop-filter: blur(var(--glass-3-blur)) saturate(180%);
@@ -400,7 +460,7 @@ img { max-width: 100%; display: block; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* ============================================
-   SECTIONS — general
+   SECTIONS
    ============================================ */
 .section { padding: 120px 0; position: relative; }
 .section-alt { background: transparent; }
@@ -417,7 +477,7 @@ img { max-width: 100%; display: block; }
 .section-sub { margin-top: 16px; font-size: 16.5px; color: var(--muted); max-width: 540px; }
 
 /* ============================================
-   SERVICES — whisper-glass cards, light depth
+   SERVICES & PROCESS
    ============================================ */
 .services-grid {
   margin-top: 56px;
@@ -426,7 +486,6 @@ img { max-width: 100%; display: block; }
   gap: 20px;
   perspective: 1000px;
 }
-
 .service-card {
   padding: 32px 26px;
   border-radius: var(--radius-md);
@@ -451,8 +510,6 @@ img { max-width: 100%; display: block; }
 .service-card.tilt.hovering {
   background: var(--glass-3-bg);
 }
-
-
 .service-icon {
   width: 46px; height: 46px; border-radius: 12px;
   background: linear-gradient(135deg, var(--amber-glow), transparent);
@@ -462,14 +519,38 @@ img { max-width: 100%; display: block; }
   border: 1px solid rgba(224,138,62,0.25);
 }
 .service-icon svg { width: 22px; height: 22px; }
-
 .service-card h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; margin-bottom: 10px; }
 .service-card p { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 18px; }
 .service-list li { font-size: 13.5px; color: var(--muted); padding: 6px 0; border-top: 1px solid var(--border); }
 .service-list li:first-child { border-top: none; }
 
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.process-step {
+  padding: 2rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: #888;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  width: fit-content;
+}
+.process-step h3 { font-size: 1.25rem; margin: 0; }
+.process-step p { color: #555; font-size: 0.95rem; line-height: 1.6; }
+
 /* ============================================
-   PRICING — featured card gets elevated glass treatment
+   PRICING
    ============================================ */
 .pricing-grid {
   margin-top: 56px;
@@ -478,7 +559,6 @@ img { max-width: 100%; display: block; }
   gap: 20px;
   align-items: stretch;
 }
-
 .price-card {
   padding: 36px 28px;
   border-radius: var(--radius-md);
@@ -489,7 +569,6 @@ img { max-width: 100%; display: block; }
   backdrop-filter: blur(var(--glass-1-blur));
   border: 1px solid var(--border);
 }
-
 .price-featured.glass {
   background: var(--glass-3-bg);
   backdrop-filter: blur(var(--glass-3-blur)) saturate(180%);
@@ -498,7 +577,6 @@ img { max-width: 100%; display: block; }
   box-shadow: var(--glass-shadow-deep);
   transform: translateY(-10px);
 }
-
 .price-tag {
   position: absolute; top: -13px; left: 28px;
   background: var(--amber);
@@ -507,14 +585,12 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.06em; padding: 5px 12px; border-radius: 999px;
   box-shadow: 0 4px 12px var(--amber-glow);
 }
-
 .price-name { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
 .price-desc { font-size: 13.5px; color: var(--muted); margin-top: 8px; min-height: 38px; }
 .price-amount { font-family: var(--font-display); font-size: 32px; font-weight: 600; margin-top: 18px; color: var(--ink); }
 .price-amount .curr { font-size: 20px; vertical-align: 2px; color: var(--muted); }
 .price-period { display: block; font-family: var(--font-body); font-size: 12.5px; color: var(--muted); font-weight: 400; margin-top: 4px; }
 .price-amount-custom { font-size: 26px; color: var(--amber-deep); }
-
 .price-features { margin-top: 24px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
 .price-features li { font-size: 13.5px; color: var(--ink-soft); padding-left: 20px; position: relative; }
 .price-features li::before {
@@ -526,7 +602,6 @@ img { max-width: 100%; display: block; }
    TEAM
    ============================================ */
 .team-grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; perspective: 1000px; }
-
 .team-card {
   padding: 38px 30px;
   border-radius: var(--radius-md);
@@ -546,7 +621,6 @@ img { max-width: 100%; display: block; }
 }
 .team-card:hover:not(.tilt) { transform: translateY(-6px); box-shadow: var(--glass-shadow-deep); }
 .team-card.tilt.hovering { box-shadow: var(--glass-shadow-deep); }
-
 .team-avatar {
   width: 58px; height: 58px; border-radius: 16px;
   background: linear-gradient(135deg, var(--amber), var(--amber-deep));
@@ -556,7 +630,6 @@ img { max-width: 100%; display: block; }
   margin-bottom: 22px;
   box-shadow: 0 8px 20px var(--amber-glow);
 }
-
 .team-card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
 .team-role { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--amber-deep); margin-top: 4px; margin-bottom: 16px; }
 .team-bio { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 22px; }
@@ -579,13 +652,10 @@ img { max-width: 100%; display: block; }
 }
 .tab-btn { padding: 10px 22px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); transition: all 0.25s ease; }
 .tab-btn.active { background: var(--ink); color: var(--bg); }
-
 .project-panels { margin-top: 36px; }
 .project-panel { display: none; }
 .project-panel.active { display: block; }
-
 .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-
 .project-card {
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -597,7 +667,6 @@ img { max-width: 100%; display: block; }
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 .project-card:hover { transform: translateY(-6px); box-shadow: var(--glass-shadow-deep); }
-
 .project-thumb { height: 160px; position: relative; }
 .thumb-1 { background: linear-gradient(135deg, #F3D9C4, #E8C4A0); }
 .thumb-2 { background: linear-gradient(135deg, #D9E8D6, #BFD9BA); }
@@ -607,14 +676,11 @@ img { max-width: 100%; display: block; }
 .thumb-6 { background: linear-gradient(135deg, #F0E8D0, #E0D2A8); }
 .thumb-7 { background: linear-gradient(135deg, #E8E4DC, #D4CCC0); }
 .thumb-8 { background: linear-gradient(135deg, #E8E4DC, #D4CCC0); }
-
 .project-body { padding: 24px; }
-
 .project-status { display: inline-block; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
 .status-live { background: rgba(80, 160, 100, 0.15); color: #3D7A4D; }
 .status-progress { background: rgba(224, 138, 62, 0.15); color: var(--amber-deep); }
 .status-other { background: rgba(122, 116, 104, 0.12); color: var(--muted); }
-
 .project-body h3 { font-family: var(--font-display); font-size: 18px; font-weight: 600; margin-bottom: 8px; }
 .project-body p { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 16px; }
 .project-tags { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -626,10 +692,9 @@ img { max-width: 100%; display: block; }
 .project-link-disabled { color: var(--muted); cursor: default; }
 
 /* ============================================
-   CONTACT — elevated glass, the centerpiece panel
+   CONTACT
    ============================================ */
 .contact-section { padding: 120px 0 140px; }
-
 .contact-wrap.glass {
   background: var(--glass-3-bg);
   backdrop-filter: blur(var(--glass-3-blur)) saturate(180%);
@@ -644,15 +709,12 @@ img { max-width: 100%; display: block; }
   grid-template-columns: 1fr 1.1fr;
   gap: 56px;
 }
-
 .contact-title { font-size: clamp(28px, 3.6vw, 38px); }
-
 .contact-info { margin-top: 36px; display: flex; flex-direction: column; gap: 16px; }
 .contact-info-row { display: flex; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid var(--border); font-size: 14.5px; }
 .contact-info-label { color: var(--muted); font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
 .contact-info-row a { font-weight: 600; }
 .contact-info-row a:hover { color: var(--amber-deep); }
-
 .contact-form { display: flex; flex-direction: column; gap: 18px; }
 .form-row { display: flex; flex-direction: column; gap: 8px; }
 .form-row label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em; }
@@ -666,105 +728,173 @@ img { max-width: 100%; display: block; }
 .form-note { font-size: 13px; color: var(--amber-deep); min-height: 18px; }
 
 /* ============================================
+   FAQ
+   ============================================ */
+.faq-container { max-width: 800px; margin: 0 auto; }
+.faq-list { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem; }
+.faq-item { padding: 2rem; text-align: left; }
+.faq-item h4 { font-family: 'Inter', sans-serif; font-size: 1.1rem; margin-bottom: 0.75rem; }
+.faq-item p { color: #555; line-height: 1.6; font-size: 0.95rem; }
+
+/* ============================================
    FOOTER
    ============================================ */
-.footer {
-  padding: 4rem 1rem 2rem;
-  background-color: transparent; /* Lets the existing mesh gradient show through */
+.footer { 
+  padding: 5rem 1rem 3rem; 
+  background-color: transparent; 
+  border-top: 1px solid var(--border);
 }
 
-.footer-links a:hover { color: var(--amber-deep); }
-
-.footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.footer-inner { 
+  max-width: 1100px; 
+  margin: 0 auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 3.5rem; 
 }
 
-/* Top Section Layout */
-.footer-top {
+/* 3-Column Grid Layout */
+.footer-main { 
+  display: grid; 
+  grid-template-columns: 2fr 1fr 1.2fr; 
+  gap: 3rem; 
+}
+
+.footer-col { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+}
+
+/* Brand Section */
+.footer-logo-link { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.6rem; 
+  text-decoration: none; 
+  color: var(--ink); 
+  margin-bottom: 1rem; 
+}
+.footer-brand-name { 
+  font-family: var(--font-display); 
+  font-weight: 600; 
+  font-size: 1.25rem; 
+  letter-spacing: -0.2px; 
+}
+.footer-tagline { 
+  font-size: 0.95rem; 
+  color: var(--ink-soft); 
+  line-height: 1.6; 
+  max-width: 340px; 
+  margin-bottom: 1.5rem; 
+}
+
+/* Social Buttons */
+.footer-socials { 
+  display: flex; 
+  gap: 0.8rem; 
+}
+.footer-socials a { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  width: 42px; 
+  height: 42px; 
+  border-radius: 50%;
+  background: rgba(0,0,0,0.05); 
+  color: var(--ink);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.footer-socials a:hover { 
+  background: var(--ink); 
+  color: var(--bg); 
+  transform: translateY(-2px);
+}
+.footer-socials svg { 
+  width: 18px; 
+  height: 18px; 
+}
+
+/* Columns */
+.footer-heading { 
+  font-family: var(--font-display); 
+  font-size: 1.15rem; 
+  font-weight: 600; 
+  margin-bottom: 1.25rem; 
+  color: var(--ink); 
+}
+.footer-links-list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.8rem; 
+}
+.footer-links-list a { 
+  font-size: 0.95rem; 
+  color: var(--ink-soft); 
+  transition: color 0.2s; 
+}
+.footer-links-list a:hover { 
+  color: var(--amber-deep); 
+}
+
+/* Contact List specific */
+.contact-list a {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  word-break: break-word;
+}
+.contact-list .icon {
+  font-size: 1.1rem;
+  opacity: 0.7;
+}
+
+/* Footer Icon Styling */
+.footer-icon {
+  width: 16px;
+  height: 16px;
+  stroke: var(--muted); /* Inherits the muted grey color */
+  transition: stroke 0.2s;
+}
+
+/* Make them glow/darken on hover to match the link text */
+.contact-list a:hover .footer-icon {
+  stroke: var(--amber-deep);
+}
+
+/* Bottom Bar */
+.footer-bottom { 
+  padding-top: 2rem; 
+  border-top: 1px solid rgba(0, 0, 0, 0.1); 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1rem;
+}
+.footer-copy, .footer-credit { 
+  margin: 0; 
+  font-size: 0.85rem; 
+  color: var(--muted); 
+}
+.footer-credit strong { 
+  color: var(--ink); 
+  font-weight: 600; 
 }
 
-/* Brand Grouping */
-.footer-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.footer-logo {
-  display: block;
-  object-fit: contain;
-}
-
-.footer-tagline {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #555; /* Subtle grey */
-}
-
-/* Links Layout */
-.footer-links {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.footer-links a {
-  text-decoration: none;
-  color: #111;
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: opacity 0.2s ease;
-}
-
-.footer-links a:hover {
-  opacity: 0.6;
-}
-
-/* Bottom Section */
-.footer-bottom {
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1); /* Subtle separator line */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-copy {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #777;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .footer-top {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .footer-bottom {
-    justify-content: center;
-    text-align: center;
-  }
-}
 
 /* ============================================
    Scroll reveal
    ============================================ */
 .reveal-up { opacity: 0; transform: translateY(40px); }
 
+/* Touch Target Optimization */
+button, .btn, .nav-links a, .project-link, .team-link {
+  min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center;
+}
+
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE QUERIES
    ============================================ */
 @media (max-width: 980px) {
   .nav-links { display: none; }
@@ -777,13 +907,133 @@ img { max-width: 100%; display: block; }
   .price-featured.glass { transform: none; }
 }
 
+@media (max-width: 768px) {
+  /* Premium Mobile Menu Overlay */
+  .nav-links {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: 2rem; font-size: 1.5rem; transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    z-index: 99; display: flex !important;
+  }
+  .nav-links.menu-open { transform: translateY(0); }
+  .nav-cta { display: none; }
+
+  /* Navbar Docked to Top */
+  .nav-wrap { top: 0; padding: 0; }
+  .nav { border-radius: 0; border-top: none; border-left: none; border-right: none; padding: 14px 24px; }
+  .nav-brand-name { font-size: 1.05rem; }
+
+  /* Typography Scaling */
+  .hero-title { font-size: 2.5rem; line-height: 1.1; }
+  .section-title { font-size: 2.2rem; }
+  
+  /* BUTTON FIX: Full width, stacked, aligned with text */
+  .hero-actions {
+    display: flex; 
+    flex-direction: column; 
+    align-items: stretch; /* Stretches buttons perfectly to container edges */
+    width: 100%; 
+    gap: 0.8rem; 
+  }
+  .hero-actions .btn {
+    width: 100%;
+    max-width: none; /* Removes the awkward center clamping */
+    justify-content: center;
+  }
+
+  /* STATS ROW FIX: Horizontal and balanced */
+  .hero-stats {
+    width: 100%;
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.25rem;
+    margin-top: 2.5rem;
+    box-sizing: border-box;
+  }
+  .stat { align-items: center; text-align: center; }
+  .stat-num { font-size: 26px; }
+  .stat-label { font-size: 11px; max-width: 70px; line-height: 1.3; }
+  .stat-divider { 
+    width: 1px; 
+    height: 36px; 
+    margin: 0; 
+    background: var(--border); 
+  } /* Restores proper vertical lines */
+
+  /* Grid Restructuring */
+  .services-grid, .project-grid, .team-grid, .process-grid, .testimonial-grid {
+    grid-template-columns: 1fr; gap: 1.5rem;
+  }
+
+/* Contact Form Adjustments */
+  .contact-section { 
+    padding: 60px 0 80px; 
+  }
+  
+  .contact-wrap { 
+    display: flex; 
+    flex-direction: column; 
+    padding: 2.5rem 1.5rem; 
+    gap: 2.5rem; 
+  }
+  
+  .contact-left, .contact-form { 
+    width: 100%; 
+  }
+
+  /* Scale down the title */
+  .contact-title {
+    font-size: 2.2rem;
+    line-height: 1.1;
+  }
+
+  /* FIX: Stack the contact info rows on mobile */
+  .contact-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding-bottom: 16px;
+  }
+
+  /* FIX: Prevent long emails from breaking the layout */
+  .contact-info-row a {
+    word-break: break-word; 
+    font-size: 15px;
+  }
+  
+  /* Fix the submit button */
+  .form-submit { 
+    width: 100%; 
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+/* Footer Restructuring */
+  .footer {
+    padding: 3rem 1rem 2rem;
+  }
+  .footer-main {
+    grid-template-columns: 1fr; /* Stacks the columns vertically */
+    gap: 2.5rem;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.5rem;
+  }
+}
+
 @media (max-width: 640px) {
   .container { padding: 0 20px; }
   .hero { padding: 120px 0 60px; }
-  .hero-stats { flex-wrap: wrap; gap: 20px; padding: 24px; }
-  .services-grid { grid-template-columns: 1fr; }
-  .pricing-grid { grid-template-columns: 1fr; }
-  .project-grid { grid-template-columns: 1fr; }
+  /* Removed the old .hero-stats flex-wrap rule here so it doesn't break the new 768px layout! */
+  .services-grid, .pricing-grid, .project-grid { grid-template-columns: 1fr; }
   .nav { padding: 10px 10px 10px 18px; }
   .nav-cta { display: none; }
   .section { padding: 80px 0; }
