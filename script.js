@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.stat-num').forEach((el) => {
     const target = parseFloat(el.dataset.count); // Changed to parseFloat to handle decimals like 99.9 or 5.0
     if (isNaN(target)) return;
-    
+
     ScrollTrigger.create({
       trigger: el,
       start: 'top 90%',
@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
           snap: { textContent: 1 }, // Note: if you want decimals to animate smoothly, you may need to adjust snap
           onUpdate: function () {
             // Keep original text if it has a decimal or symbol (like 99.9%), otherwise round
-            if(el.dataset.count.includes('.')){
-               el.textContent = Number(this.targets()[0].textContent).toFixed(1);
+            if (el.dataset.count.includes('.')) {
+              el.textContent = Number(this.targets()[0].textContent).toFixed(1);
             } else {
-               el.textContent = Math.ceil(this.targets()[0].textContent);
+              el.textContent = Math.ceil(this.targets()[0].textContent);
             }
           }
         });
@@ -124,18 +124,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-// ---------- Mobile nav burger (Premium Slide-Down & Auto-Close) ----------
+  // ---------- Pricing tabs ----------
+  const pricingButtons = document.querySelectorAll('.pricing-tab-btn');
+  const pricingPanels = document.querySelectorAll('.pricing-panel');
+
+  pricingButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      pricingButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      pricingPanels.forEach(panel => {
+        if (panel.dataset.panel === target) { panel.classList.add('active'); } else { panel.classList.remove('active'); }
+      });
+    });
+  });
+
+  // ---------- Mobile nav burger (Premium Slide-Down & Auto-Close) ----------
   const burger = document.getElementById('navBurger');
   const navLinks = document.querySelector('.nav-links');
-  
+
   if (burger && navLinks) {
     burger.addEventListener('click', () => {
       // Toggle the menu visibility
       navLinks.classList.toggle('menu-open');
-      
+
       // Animate the burger icon into an 'X'
-      burger.classList.toggle('active'); 
-      
+      burger.classList.toggle('active');
+
       // Prevent background scrolling when menu is open
       if (navLinks.classList.contains('menu-open')) {
         document.body.style.overflow = 'hidden';
@@ -151,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Remove open classes
         navLinks.classList.remove('menu-open');
         burger.classList.remove('active');
-        
+
         // Restore background scrolling
         document.body.style.overflow = '';
       });
@@ -165,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     const submitButton = form.querySelector('.form-submit');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
 
       // UI Feedback: Let the user know it's sending
@@ -186,45 +201,45 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: json
       })
-      .then(async (response) => {
-        let json = await response.json();
-        if (response.status == 200) {
-          // Success
+        .then(async (response) => {
+          let json = await response.json();
+          if (response.status == 200) {
+            // Success
+            result.style.display = "block";
+            result.style.color = "#10b981"; // Success green
+            result.innerText = "Message sent successfully! We'll be in touch soon.";
+            gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+            form.reset();
+          } else {
+            // Form endpoint error
+            result.style.display = "block";
+            result.style.color = "#ef4444"; // Error red
+            result.innerText = json.message || "Something went wrong.";
+            gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+          }
+        })
+        .catch(error => {
+          // Network error
           result.style.display = "block";
-          result.style.color = "#10b981"; // Success green
-          result.innerText = "Message sent successfully! We'll be in touch soon.";
+          result.style.color = "#ef4444";
+          result.innerText = "Something went wrong! Please try again later.";
           gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
-          form.reset();
-        } else {
-          // Form endpoint error
-          result.style.display = "block";
-          result.style.color = "#ef4444"; // Error red
-          result.innerText = json.message || "Something went wrong.";
-          gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
-        }
-      })
-      .catch(error => {
-        // Network error
-        result.style.display = "block";
-        result.style.color = "#ef4444";
-        result.innerText = "Something went wrong! Please try again later.";
-        gsap.fromTo(result, { opacity: 0 }, { opacity: 1, duration: 0.4 });
-      })
-      .finally(() => {
-        // Reset button state
-        submitButton.innerText = originalBtnText;
-        submitButton.style.opacity = '1';
-        submitButton.style.pointerEvents = 'auto';
+        })
+        .finally(() => {
+          // Reset button state
+          submitButton.innerText = originalBtnText;
+          submitButton.style.opacity = '1';
+          submitButton.style.pointerEvents = 'auto';
 
-        // Fade out and hide the message after 5 seconds
-        setTimeout(() => {
-          gsap.to(result, { 
-            opacity: 0, 
-            duration: 0.4, 
-            onComplete: () => { result.style.display = "none"; }
-          });
-        }, 5000);
-      });
+          // Fade out and hide the message after 5 seconds
+          setTimeout(() => {
+            gsap.to(result, {
+              opacity: 0,
+              duration: 0.4,
+              onComplete: () => { result.style.display = "none"; }
+            });
+          }, 5000);
+        });
     });
   }
 
